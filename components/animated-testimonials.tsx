@@ -1,6 +1,6 @@
 "use client";
 
-import { IconArrowLeft, IconArrowRight } from "@tabler/icons-react";
+
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -144,7 +144,7 @@ export const AnimatedTestimonials = ({
               ))}
             </motion.p>
           </motion.div>
-          <div className="flex gap-4 -mt-20 md:pt-0">
+          {/* <div className="flex gap-4 -mt-20 md:pt-0">
             <button
               onClick={handlePrev}
               className="h-7 w-7 rounded-full bg-gray-100 dark:bg-neutral-800 flex items-center justify-center group/button"
@@ -157,7 +157,7 @@ export const AnimatedTestimonials = ({
             >
               <IconArrowRight className="h-5 w-5 text-black dark:text-neutral-400 group-hover/button:-rotate-12 transition-transform duration-300" />
             </button>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
