@@ -1,0 +1,4 @@
+
+[submodule "ivents_waiting_banner"]
+  path = ivents_waiting_banner
+  url = https://github.com/ivents/ivents_waiting_banner.git
