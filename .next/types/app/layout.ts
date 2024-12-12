@@ -1,4 +1,4 @@
-// File: C:\Users\USER\Desktop\waitllist\app\layout.tsx
+// File: C:\Users\USER\Desktop\ivents_waiting_banner\app\layout.tsx
 import * as entry from '../../../app/layout.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

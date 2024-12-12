@@ -48,8 +48,17 @@ export default function Component() {
 
   return (
     <div className="min-h-screen bg-black text-white">
+      <div className="flex justify-center md:justify-start ">
+          <Image
+            src="/ivent.png"
+            alt="IventVerse Logo"
+            width={150}
+            height={150}
+            className="w-auto h-96 w-96 md:h-52 md:-m-5 -mt-16 md:px-5"
+          />
+        </div>
       <main className="mx-auto max-w-6xl px-4 py-20">
-        <div className="grid md:grid-cols-2 gap-12 items-center">
+        <div className="grid md:grid-cols-2 gap-12 items-center">       
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -67,7 +76,7 @@ export default function Component() {
             transition={{ duration: 0.5 }}
           >
             
-            <div className="text-center md:text-left">
+            <div className="text-center md:text-left md:-mt-32">
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -260,8 +269,8 @@ export default function Component() {
         </div>
       </main>
 
-      <footer className="mt-36 text-center">
-        <p className="text-sm">A product of mecuritech</p>
+      <footer className=" text-center">
+        <p className="text-sm">A product of <span className="hover:underline"><a href="https://mecurixtech.com/">Mecurixtech</a></span></p>
       </footer>
 
       <AnimatePresence>
