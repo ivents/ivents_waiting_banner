@@ -270,7 +270,7 @@ export default function Component() {
       </main>
 
       <footer className=" text-center">
-        <p className="text-sm">A product of <span className="hover:underline"><a href="https://mecurixtech.com/">Mecurixtech</a></span></p>
+        <p className="text-sm bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">A product of <span className="hover:underline hover:text-white"><a href="https://mecurixtech.com/">Mecurixtech</a></span></p>
       </footer>
 
       <AnimatePresence>
