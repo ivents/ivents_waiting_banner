@@ -21,7 +21,7 @@ export const waitlistUser = async (user: User) => {
                 fullName: user.fullName,
                 email: user.email,
                 phoneNumber: user.phoneNumber,
-                occasions: "example occasions data",
+               
             },
         });
 
@@ -36,7 +36,7 @@ export const waitlistUser = async (user: User) => {
             const occasionsResponse = await client.response.create({
                 data: {
                     userId: userResponse.id, // Link to the user
-                    occasions: "example occasions data", // Set the value of occasions
+                    occasions: "example occasions data",
                 },
             });
 

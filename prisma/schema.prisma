@@ -18,7 +18,7 @@ model User {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @default(now()) @updatedAt
 }
-model response {
+model Response {
   id          Int      @id @default(autoincrement())
   fullName    String
   email       String   @unique
