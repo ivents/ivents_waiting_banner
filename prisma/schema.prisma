@@ -16,4 +16,7 @@ model User {
   fullName String
   email    String   @unique
   phoneNumber String
+  occasions String[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

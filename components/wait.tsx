@@ -3,12 +3,12 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight } from 'lucide-react';
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { z } from "zod";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Dialog,
@@ -19,24 +19,45 @@ import {
 import { waitlistUser } from "@/lib/queries";
 import { AnimatedTestimonialsDemo } from "./AnimatedTestimonialsDemo";
 
+const occasions = [
+  "Birthday",
+  "Anniversary",
+  "Wedding",
+  "Graduation",
+  "Baby Shower",
+  "House Warming",
+  "Christmas",
+  "Valentine's Day",
+  "Mother's Day",
+  "Father's Day",
+  "New Year",
+  "Retirement"
+];
+
 const formSchema = z.object({
   fullName: z.string().min(2, "Full name must be at least 2 characters"),
   email: z.string().email("Invalid email address"),
   phoneNumber: z.string().min(2, "Invalid phone number"),
+  occasions: z.array(z.string()).min(1, "Please select at least one occasion").max(3, "You can only select up to 3 occasions"),
 });
 
 type FormData = z.infer<typeof formSchema>;
 
 export default function Component() {
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
     reset,
   } = useForm<FormData>({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      occasions: [],
+    },
   });
 
   const onSubmit = async (data: FormData) => {
@@ -49,14 +70,14 @@ export default function Component() {
   return (
     <div className="min-h-screen bg-black text-white">
       <div className="flex justify-center md:justify-start ">
-          <Image
-            src="/ivent.png"
-            alt="IventVerse Logo"
-            width={150}
-            height={150}
-            className="w-auto h-96 w-96 md:h-52 md:-m-5 -mt-16 md:px-5"
-          />
-        </div>
+        <Image
+          src="/ivent.png"
+          alt="IventVerse Logo"
+          width={150}
+          height={150}
+          className="w-auto h-96 w-96 md:h-52 md:-m-5 -mt-16 md:px-5"
+        />
+      </div>
       <main className="mx-auto max-w-6xl px-4 py-20">
         <div className="grid md:grid-cols-2 gap-12 items-center">       
           <motion.div
@@ -64,10 +85,8 @@ export default function Component() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
           >
-
             <div className="">
-          <AnimatedTestimonialsDemo/>
-          
+              <AnimatedTestimonialsDemo/>
             </div>
           </motion.div>
           <motion.div
@@ -75,7 +94,6 @@ export default function Component() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
           >
-            
             <div className="text-center md:text-left md:-mt-32">
               <motion.div
                 initial={{ opacity: 0 }}
@@ -188,6 +206,76 @@ export default function Component() {
                   )}
                 </div>
 
+                <div className="relative">
+                  <Controller
+                    name="occasions"
+                    control={control}
+                    render={({ field }) => (
+                      <div>
+                
+                        <button
+                          type="button"
+                          onClick={() => setIsOpen(!isOpen)}
+                          className="w-full h-12 rounded-lg border-gray-800 bg-[#111] pl-10 text-left text-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                        >
+                          {field.value.length === 0 ? (
+                            <span className="text-gray-400">What type of events are you interested in? (max 3)...</span>
+                          ) : (
+                            field.value.join(", ")
+                          )}
+                        </button>
+                        <svg
+                          className="absolute left-3 top-3.5 h-5 w-5 text-gray-500"
+                          fill="none"
+                          height="24"
+                          stroke="currentColor"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          viewBox="0 0 24 24"
+                          width="24"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                          <polyline points="17 8 12 3 7 8" />
+                          <line x1="12" x2="12" y1="3" y2="15" />
+                        </svg>
+                        {isOpen && (
+                          <div className="absolute z-10 w-full mt-1 bg-[#111] border border-gray-700 rounded-md shadow-lg">
+                            <ul className="py-1 max-h-60 overflow-auto">
+                              {occasions.map((occasions) => (
+                                <li
+                                  key={occasions}
+                                  className={`px-4 py-2 cursor-pointer ${
+                                    field.value.includes(occasions)
+                                      ? "bg-gray-700 text-white"
+                                      : "text-gray-200 hover:bg-gray-700"
+                                  }`}
+                                  onClick={() => {
+                                    const updatedValue = field.value.includes(occasions)
+                                      ? field.value.filter((item) => item !== occasions)
+                                      : field.value.length < 3
+                                      ? [...field.value, occasions]
+                                      : field.value;
+                                    field.onChange(updatedValue);
+                                  }}
+                                >
+                                  {occasions}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  />
+                  {errors.occasions && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.occasions.message}
+                    </p>
+                  )}
+                </div>
+
                 <motion.div
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
@@ -224,24 +312,19 @@ export default function Component() {
                   <span>Twitter</span>
                 </Link>
 
-
-
                 <Link
                   className="flex items-center gap-2 text-sm text-gray-400 hover:text-gray-300"
                   href="https://www.instagram.com/iventverse?igsh=eTluMmszOTgybDJo"
                   target="_blank"
                 >
                   <svg
-                    
                     className="h-5 w-5"
                     fill="currentColor"
                     viewBox="0 0 24 24"
                   >
                     <path
                       fill="currentColor"
-                      d="M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2m-.2 2A3.6 3.6 0 0 0 4 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6C20 5.61 18.39 4 16.4 4zm9.65 1.5a1.25 1.25 0 0 1 1.25 1.25A1.25 1.25 0 0 1 17.25 8A1.25 1.25 0 0 1 16 6.75a1.25 1.25 0 0 1 1.25-1.25M12 7a5 5 0 0 
-                      1 5 5a5 5 0 0 1-5 5a5 5 0 0 1-5-5a5 5 0 0 1 5-5m0 2
-                      a3 3 0 0 0-3 3a3 3 0 0 0 3 3a3 3 0 0 0 3-3a3 3 0 0 0-3-3"
+                      d="M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2m-.2 2A3.6 3.6 0 0 0 4 7.6v8.8C4 18.39 5.61 20 7.6C20 5.61 18.39 4 16.4 4zm9.65 1.5a1.25 1.25 0 0 1 1.25 1.25A1.25 1.25 0 0 1 17.25 8A1.25 1.25 0 0 1 16 6.75a1.25 1.25 0 0 1 1.25-1.25M12 7a5 5 0 0 1 5 5a5 5 0 0 1-5 5a5 5 0 0 1-5-5a5 5 0 0 1 5-5m0 2 a3 3 0 0 0-3 3a3 3 0 0 0 3 3a3 3 0 0 0 3-3a3 3 0 0 0-3-3"
                     />
                   </svg>
                   <span>Instagram</span>
@@ -288,3 +371,4 @@ export default function Component() {
     </div>
   );
 }
+

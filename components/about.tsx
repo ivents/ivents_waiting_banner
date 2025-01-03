@@ -54,27 +54,29 @@ export default function AboutPage() {
             experience.
           </p>
           <p className="font-bold">What We Do</p>
+          <p>At Iventverse, we bring the entire event ecosystem together:</p>
           <p>
-            At Iventverse, we bring the entire event ecosystem together:</p>
-            <p > <span className="font-bold">For Organizers:</span> Tools that simplify planning, ticketing, vendor
-            management, and marketing so you can focus on delivering
-            unforgettable experiences.
+            {" "}
+            <span className="font-bold">For Organizers:</span> Tools that
+            simplify planning, ticketing, vendor management, and marketing so
+            you can focus on delivering unforgettable experiences.
             <p>
-             <span className="font-bold"> For Vendors:</span> A marketplace to showcase your products and services
-              and seamlessly connect with event planners.
+              <span className="font-bold"> For Vendors:</span> A marketplace to
+              showcase your products and services and seamlessly connect with
+              event planners.
             </p>
             <p>
-              <span className="font-bold">For Artists:</span> A platform to shine, connect, and showcase your
-              creativity to a global audience.
+              <span className="font-bold">For Artists:</span> A platform to
+              shine, connect, and showcase your creativity to a global audience.
             </p>
             <p>
-             <span className="font-bold"> For Attendees:</span> An intuitive hub to discover, book, and engage with
-
-              events tailored just for you.
+              <span className="font-bold"> For Attendees:</span> An intuitive
+              hub to discover, book, and engage with events tailored just for
+              you.
             </p>
             <p>
-            <span className="font-bold"> For Communities:</span> A platform to unite, celebrate, and tell stories
-              through culturally rich events.
+              <span className="font-bold"> For Communities:</span> A platform to
+              unite, celebrate, and tell stories through culturally rich events.
             </p>
           </p>
 
@@ -88,10 +90,8 @@ export default function AboutPage() {
             here to simplify, streamline, and celebrate events—ensuring everyone
             has a seat at the table.
           </p>
-          <p><span className="font-bold">
-            How We Do It
-
-          </span>
+          <p>
+            <span className="font-bold">How We Do It</span>
             <ul>
               <li>
                 1. Technology Meets Simplicity: From AI-driven event
@@ -117,41 +117,49 @@ export default function AboutPage() {
           </p>
           <p>
             Honoring African heritage through diverse events.
+            <p>Creating a fraud-free, safe ecosystem for all users.</p>
             <p>
-Creating a fraud-free, safe ecosystem for all users.
-</p>
-            <p>
-Delivering personalized and innovative experiences that leave lasting impressions.
-</p>
+              Delivering personalized and innovative experiences that leave
+              lasting impressions.
+            </p>
           </p>
-          <p className="font-bold">Our Core Values
-          </p>
-          <p>Innovation: Redefining how events are planned and experienced.
-          </p>
-          <p>Culture: Celebrating the heartbeat of African traditions while embracing global trends.
-          </p>
-          <p>Inclusion: Ensuring every voice is heard, and every role is valued.
+          <p className="font-bold">Our Core Values</p>
+          <p>Innovation: Redefining how events are planned and experienced.</p>
+          <p>
+            Culture: Celebrating the heartbeat of African traditions while
+            embracing global trends.
           </p>
           <p>
-          Collaboration: Building partnerships that foster growth and creativity.
-
+            Inclusion: Ensuring every voice is heard, and every role is valued.
+          </p>
+          <p>
+            Collaboration: Building partnerships that foster growth and
+            creativity.
           </p>
           <p>Excellence: Delivering top-tier services at every step.</p>
 
-<p className="font-bold">The Future of Events
-</p>
-<p>Iventverse is not just a platform; it’s a movement. Imagine a world where attending an event feels as seamless as scrolling through your phone. A world where vendors are celebrated, artists are elevated, and attendees are immersed in unforgettable moments. From bustling city concerts to intimate cultural festivals, Iventverse is here to ensure every event becomes a story worth sharing.
-</p>
-<p>Step into the Iventverse. Let’s create, celebrate, and elevate together.</p>
+          <p className="font-bold">The Future of Events</p>
+          <p>
+            Iventverse is not just a platform; it’s a movement. Imagine a world
+            where attending an event feels as seamless as scrolling through your
+            phone. A world where vendors are celebrated, artists are elevated,
+            and attendees are immersed in unforgettable moments. From bustling
+            city concerts to intimate cultural festivals, Iventverse is here to
+            ensure every event becomes a story worth sharing.
+          </p>
+          <p>
+            Step into the Iventverse. Let’s create, celebrate, and
+            elevate together.
+          </p>
         </div>
 
         <div className="mt-12">
           <h2 className="text-2xl font-semibold mb-4">Our Team</h2>
           <p className="text-gray-300 mb-6">
-            IventVerse is brought to you by a dedicated team of professionals
-            with diverse backgrounds in event management, technology, and
-            customer experience. We're united by our passion for creating
-            meaningful connections through events.
+            IventVerse is brought to you by MECURIXTECH team. Professionals with
+            diverse backgrounds, technology, and customer experience. We're
+            united by our passion for creating meaningful connections
+            through Technology.
           </p>
           {/* You can add team member details here if desired */}
         </div>
