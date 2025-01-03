@@ -21,6 +21,7 @@ export const waitlistUser = async (user: User) => {
                 fullName: user.fullName,
                 email: user.email,
                 phoneNumber: user.phoneNumber,
+                occasions: "example occasions data",
             },
         });
 
@@ -32,9 +33,10 @@ export const waitlistUser = async (user: User) => {
         // Optional: Save additional data if needed
         const occasions = "example occasions data"; // Define `occasions` properly
         try {
-            const occasionsResponse = await client.user.create({
+            const occasionsResponse = await client.response.create({
                 data: {
-                    occasions, // Save `occasions` in the database
+                    userId: userResponse.id, // Link to the user
+                    occasions: "example occasions data", // Set the value of occasions
                 },
             });
 
