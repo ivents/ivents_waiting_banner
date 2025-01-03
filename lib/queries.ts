@@ -32,7 +32,7 @@ export const waitlistUser = async (user: User) => {
         // Optional: Save additional data if needed
         const occasions = "example occasions data"; // Define `occasions` properly
         try {
-            const occasionsResponse = await client.response.create({
+            const occasionsResponse = await client.user.create({
                 data: {
                     occasions, // Save `occasions` in the database
                 },

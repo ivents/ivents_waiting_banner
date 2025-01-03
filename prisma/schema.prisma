@@ -10,13 +10,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model User {
-  id String   @id @default(cuid())
-  fullName String
-  email    String   @unique
+  id          Int      @id @default(autoincrement())
+  fullName    String
+  email       String   @unique
   phoneNumber String
-  occasions String[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  occasions   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
 }
