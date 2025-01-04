@@ -61,12 +61,28 @@ export default function Component() {
   });
 
   const onSubmit = async (data: FormData) => {
-    await waitlistUser(data);
-    console.log(data);
-    setIsSubmitted(true);
-    reset();
+    try {
+      console.log('Form submission data:', {
+        fullName: data.fullName,
+        email: data.email,
+        phoneNumber: data.phoneNumber,
+        occasions: data.occasions // Log occasions array before submission
+      });
+  
+      await waitlistUser({
+        fullName: data.fullName,
+        email: data.email,
+        phoneNumber: data.phoneNumber,
+        ocassions: data.occasions.join(', ') // Join array into string for DB
+      });
+  
+      console.log('Submission successful');
+      setIsSubmitted(true);
+      reset();
+    } catch (error) {
+      console.error('Error submitting form:', error);
+    }
   };
-
   return (
     <div className="min-h-screen bg-black text-white">
       <div className="flex justify-center md:justify-start ">
@@ -243,26 +259,28 @@ export default function Component() {
                         {isOpen && (
                           <div className="absolute z-10 w-full mt-1 bg-[#111] border border-gray-700 rounded-md shadow-lg">
                             <ul className="py-1 max-h-60 overflow-auto">
-                              {occasions.map((occasions) => (
-                                <li
-                                  key={occasions}
-                                  className={`px-4 py-2 cursor-pointer ${
-                                    field.value.includes(occasions)
-                                      ? "bg-gray-700 text-white"
-                                      : "text-gray-200 hover:bg-gray-700"
-                                  }`}
-                                  onClick={() => {
-                                    const updatedValue = field.value.includes(occasions)
-                                      ? field.value.filter((item) => item !== occasions)
-                                      : field.value.length < 3
-                                      ? [...field.value, occasions]
-                                      : field.value;
-                                    field.onChange(updatedValue);
-                                  }}
-                                >
-                                  {occasions}
-                                </li>
-                              ))}
+                            {occasions.map((occasion) => ( // Changed variable name from occasions to occasion
+  <li
+    key={occasion}
+    className={`px-4 py-2 cursor-pointer ${
+      field.value.includes(occasion)
+        ? "bg-gray-700 text-white"
+        : "text-gray-200 hover:bg-gray-700"
+    }`}
+    onClick={() => {
+      const updatedValue = field.value.includes(occasion)
+        ? field.value.filter((item) => item !== occasion)
+        : field.value.length < 3
+        ? [...field.value, occasion]
+        : field.value;
+      
+      console.log('Selected occasions:', updatedValue); // Log updated occasions
+      field.onChange(updatedValue);
+    }}
+  >
+    {occasion}
+  </li>
+))}
                             </ul>
                           </div>
                         )}

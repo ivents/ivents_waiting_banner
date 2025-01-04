@@ -6,7 +6,13 @@ type User = {
     fullName: string;
     email: string;
     phoneNumber: string;
+    ocassions: string
+
 };
+
+type Response ={
+    occasions: string;
+}
 
 export const waitlistUser = async (user: User) => {
     // Validate input
@@ -21,6 +27,7 @@ export const waitlistUser = async (user: User) => {
                 fullName: user.fullName,
                 email: user.email,
                 phoneNumber: user.phoneNumber,
+                ocassions: user.ocassions
                
             },
         });
@@ -30,21 +37,10 @@ export const waitlistUser = async (user: User) => {
             throw new Error("No response received from database");
         }
 
-        // Optional: Save additional data if needed
-        const occasions = "example occasions data"; // Define `occasions` properly
-        try {
-            const occasionsResponse = await client.response.create({
-                data: {
-                    userId: userResponse.id, // Link to the user
-                    occasions: "example occasions data",
-                },
-            });
+        console.log('User created successfully:', userResponse); // Log success
+        return userResponse; // Return the created user data
 
-            return { success: true, data: { userResponse, occasionsResponse } };
-        } catch (error) {
-            console.error("Failed to save occasions:", error);
-            return { success: false, error: "Failed to save occasions" };
-        }
+       
     } catch (error) {
         // Comprehensive error handling
         if (error instanceof Error) {
