@@ -20,18 +20,18 @@ import { waitlistUser } from "@/lib/queries";
 import { AnimatedTestimonialsDemo } from "./AnimatedTestimonialsDemo";
 
 const occasions = [
-  "Birthday",
-  "Anniversary",
-  "Wedding",
-  "Graduation",
-  "Baby Shower",
-  "House Warming",
-  "Christmas",
-  "Valentine's Day",
-  "Mother's Day",
-  "Father's Day",
-  "New Year",
-  "Retirement"
+  "Pool Party",
+  "Bole Festival",
+  "Birthday Bash",
+  "House party",
+  "Game night",
+  "Gospel concert",
+  "Food and Wine tasting",
+  "Book launch",
+  "Festivals and carnivals",
+  "Comedy shows",
+  "Art exhibitions",
+  "Picnics"
 ];
 
 const formSchema = z.object({
