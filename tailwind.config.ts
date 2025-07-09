@@ -10,6 +10,7 @@ export default {
   theme: {
   	extend: {
   		colors: {
+			ivent:"#A81B0E",
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {

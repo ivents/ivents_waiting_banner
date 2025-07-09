@@ -21,7 +21,6 @@ import { AnimatedTestimonialsDemo } from "./AnimatedTestimonialsDemo";
 
 const occasions = [
   "Pool Party",
-  "Bole Festival",
   "Birthday Bash",
   "House party",
   "Game night",
@@ -68,14 +67,14 @@ export default function Component() {
         phoneNumber: data.phoneNumber,
         occasions: data.occasions // Log occasions array before submission
       });
-  
+
       await waitlistUser({
         fullName: data.fullName,
         email: data.email,
         phoneNumber: data.phoneNumber,
         ocassions: data.occasions.join(', ') // Join array into string for DB
       });
-  
+
       console.log('Submission successful');
       setIsSubmitted(true);
       reset();
@@ -87,22 +86,22 @@ export default function Component() {
     <div className="min-h-screen bg-black text-white">
       <div className="flex justify-center md:justify-start ">
         <Image
-          src="/ivent.png"
+          src="/iventverse-logo.png"
           alt="IventVerse Logo"
           width={150}
           height={150}
-          className="w-auto h-96 w-96 md:h-52 md:-m-5 -mt-16 md:px-5"
+          className="w-auto h-96 md:h-52 md:-m-5 md:px-5 "
         />
       </div>
-      <main className="mx-auto max-w-6xl px-4 py-20">
-        <div className="grid md:grid-cols-2 gap-12 items-center">       
+      <main className="mx-auto max-w-6xl px-4 py-14">
+        <div className="grid md:grid-cols-2 gap-12 items-center">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <div className="">
-              <AnimatedTestimonialsDemo/>
+            <div className="mt-10">
+              <AnimatedTestimonialsDemo />
             </div>
           </motion.div>
           <motion.div
@@ -110,7 +109,7 @@ export default function Component() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <div className="text-center md:text-left md:-mt-32">
+            <div className="text-center md:text-left md:-mt-36">
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -127,7 +126,7 @@ export default function Component() {
               >
                 Bringing Events closer to you
                 <br />{" "}
-                <span className="bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-red-500 to-red-300 bg-clip-text text-transparent">
                   Join The Waitlist!
                 </span>
               </motion.h1>
@@ -228,7 +227,7 @@ export default function Component() {
                     control={control}
                     render={({ field }) => (
                       <div>
-                
+
                         <button
                           type="button"
                           onClick={() => setIsOpen(!isOpen)}
@@ -259,28 +258,27 @@ export default function Component() {
                         {isOpen && (
                           <div className="absolute z-10 w-full mt-1 bg-[#111] border border-gray-700 rounded-md shadow-lg">
                             <ul className="py-1 max-h-60 overflow-auto">
-                            {occasions.map((occasion) => ( // Changed variable name from occasions to occasion
-  <li
-    key={occasion}
-    className={`px-4 py-2 cursor-pointer ${
-      field.value.includes(occasion)
-        ? "bg-gray-700 text-white"
-        : "text-gray-200 hover:bg-gray-700"
-    }`}
-    onClick={() => {
-      const updatedValue = field.value.includes(occasion)
-        ? field.value.filter((item) => item !== occasion)
-        : field.value.length < 3
-        ? [...field.value, occasion]
-        : field.value;
-      
-      console.log('Selected occasions:', updatedValue); // Log updated occasions
-      field.onChange(updatedValue);
-    }}
-  >
-    {occasion}
-  </li>
-))}
+                              {occasions.map((occasion) => ( // Changed variable name from occasions to occasion
+                                <li
+                                  key={occasion}
+                                  className={`px-4 py-2 cursor-pointer ${field.value.includes(occasion)
+                                      ? "bg-gray-700 text-white"
+                                      : "text-gray-200 hover:bg-gray-700"
+                                    }`}
+                                  onClick={() => {
+                                    const updatedValue = field.value.includes(occasion)
+                                      ? field.value.filter((item) => item !== occasion)
+                                      : field.value.length < 3
+                                        ? [...field.value, occasion]
+                                        : field.value;
+
+                                    console.log('Selected occasions:', updatedValue); // Log updated occasions
+                                    field.onChange(updatedValue);
+                                  }}
+                                >
+                                  {occasion}
+                                </li>
+                              ))}
                             </ul>
                           </div>
                         )}
@@ -300,7 +298,7 @@ export default function Component() {
                 >
                   <Button
                     type="submit"
-                    className="h-12 w-full rounded-lg bg-[#111] hover:bg-[#222] hover:text-purple-400"
+                    className="h-12 w-full rounded-lg bg-[#111] hover:bg-[#222] hover:text-red-300 text-ivent"
                     variant="outline"
                   >
                     <span className="flex-1">Join the waitlist</span>
@@ -316,7 +314,7 @@ export default function Component() {
                 className="mt-8 flex justify-center md:justify-start gap-8"
               >
                 <Link
-                  className="flex items-center gap-2 text-sm text-gray-400 hover:text-gray-300"
+                  className="flex items-center gap-2 text-sm text-gray-400 hover:text-red-300"
                   href="https://x.com/iventverse"
                   target="_blank"
                 >
@@ -331,7 +329,7 @@ export default function Component() {
                 </Link>
 
                 <Link
-                  className="flex items-center gap-2 text-sm text-gray-400 hover:text-gray-300"
+                  className="flex items-center gap-2 text-sm text-gray-400 hover:text-red-300"
                   href="https://www.instagram.com/iventverse?igsh=eTluMmszOTgybDJo"
                   target="_blank"
                 >
@@ -355,14 +353,14 @@ export default function Component() {
                 transition={{ delay: 0.8 }}
                 className="mt-8"
               >
-              <div className="flex justify-center">
-  <Link
-    href="/about"
-    className="text-sm text-gray-400 hover:text-gray-300"
-  >
-    Learn More About Us
-  </Link>
-</div>
+                <div className="flex justify-center">
+                  <Link
+                    href="/about"
+                    className="text-sm text-gray-400 hover:text-red-300"
+                  >
+                    Learn More About Us
+                  </Link>
+                </div>
 
               </motion.div>
             </div>
@@ -370,8 +368,8 @@ export default function Component() {
         </div>
       </main>
 
-      <footer className=" text-center">
-        <p className="text-sm bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">A product of <span className="hover:underline hover:text-white"><a href="https://mecurixtech.com/">Mecurixtech</a></span></p>
+      <footer className=" text-center md:mb-5">
+        <p className="text-sm bg-gradient-to-r from-ivent to-red-300 bg-clip-text text-transparent">A product of <span className="hover:underline hover:text-red-200"><a href="https://mecurixtech.com/">Mecurixtech</a></span></p>
       </footer>
 
       <AnimatePresence>
