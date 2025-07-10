@@ -16,6 +16,11 @@ const geistMono = localFont({
 export const metadata: Metadata = {
   title: "Iventverse",
   description: "",
+  icons: {
+    icon: "/ivent-verse-logo.png",
+    shortcut: "/ivent-verse-logo.png",
+    apple: "/ivent-verse-logo.png",
+  },
 };
 
 export default function RootLayout({

@@ -1,5 +1,9 @@
 {
+  "/favicon-for-app/apple-icon.png/route": "app/favicon-for-app/apple-icon.png/route.js",
+  "/favicon-for-app/icon.png/route": "app/favicon-for-app/icon.png/route.js",
   "/favicon.ico/route": "app/favicon.ico/route.js",
   "/_not-found/page": "app/_not-found/page.js",
+  "/favicon-for-app/icon.svg/route": "app/favicon-for-app/icon.svg/route.js",
+  "/about/page": "app/about/page.js",
   "/page": "app/page.js"
 }
