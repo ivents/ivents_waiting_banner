@@ -6,13 +6,8 @@ type User = {
     fullName: string;
     email: string;
     phoneNumber: string;
-    ocassions: string
-
+    occasions: string
 };
-
-type Response ={
-    occasions: string;
-}
 
 export const waitlistUser = async (user: User) => {
     // Validate input
@@ -27,7 +22,7 @@ export const waitlistUser = async (user: User) => {
                 fullName: user.fullName,
                 email: user.email,
                 phoneNumber: user.phoneNumber,
-                ocassions: user.ocassions
+                occasions: user.occasions
                
             },
         });

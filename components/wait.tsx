@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Loader2 } from 'lucide-react';
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
@@ -15,92 +15,105 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { waitlistUser } from "@/lib/queries";
 import { AnimatedTestimonialsDemo } from "./AnimatedTestimonialsDemo";
+import { OCCASIONS, MAX_OCCASIONS, SOCIAL_LINKS } from "@/constants/form";
 
-const occasions = [
-  "Pool Party",
-  "Birthday Bash",
-  "House party",
-  "Game night",
-  "Gospel concert",
-  "Food and Wine tasting",
-  "Book launch",
-  "Festivals and carnivals",
-  "Comedy shows",
-  "Art exhibitions",
-  "Picnics"
-];
-
+// Enhanced form validation schema
 const formSchema = z.object({
-  fullName: z.string().min(2, "Full name must be at least 2 characters"),
-  email: z.string().email("Invalid email address"),
-  phoneNumber: z.string().min(2, "Invalid phone number"),
-  occasions: z.array(z.string()).min(1, "Please select at least one occasion").max(3, "You can only select up to 3 occasions"),
+  fullName: z
+    .string()
+    .min(2, "Name must be at least 2 characters")
+    .max(100, "Name must be less than 100 characters")
+    .regex(/^[a-zA-Z\s'-]+$/, "Please enter a valid name"),
+  email: z
+    .string()
+    .email("Please enter a valid email address")
+    .max(100, "Email must be less than 100 characters"),
+  phoneNumber: z
+    .string()
+    .min(10, "Please enter a valid phone number")
+    .max(20, "Phone number is too long")
+    .regex(/^[\d\s+\-()]+$/, "Please enter a valid phone number"),
+  occasions: z
+    .array(z.string())
+    .min(1, "Please select at least one occasion")
+    .max(MAX_OCCASIONS, `You can select up to ${MAX_OCCASIONS} occasions`),
 });
 
 type FormData = z.infer<typeof formSchema>;
 
-export default function Component() {
-  const [isSubmitted, setIsSubmitted] = useState(false);
+type FormStatus = 'idle' | 'submitting' | 'success' | 'error';
+
+const DEFAULT_FORM_VALUES: FormData = {
+  fullName: "",
+  email: "",
+  phoneNumber: "",
+  occasions: [],
+};
+
+export default function WaitlistForm() {
+  const [formStatus, setFormStatus] = useState<FormStatus>('idle');
+  const [errorMessage, setErrorMessage] = useState<string>('');
   const [isOpen, setIsOpen] = useState(false);
 
   const {
     register,
     handleSubmit,
     control,
-    formState: { errors },
     reset,
+    formState: { errors, isDirty, isValid },
   } = useForm<FormData>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      occasions: [],
-    },
+    defaultValues: DEFAULT_FORM_VALUES,
+    mode: 'onChange',
   });
 
   const onSubmit = async (data: FormData) => {
     try {
-      console.log('Form submission data:', {
-        fullName: data.fullName,
-        email: data.email,
-        phoneNumber: data.phoneNumber,
-        occasions: data.occasions // Log occasions array before submission
-      });
-
+      setFormStatus('submitting');
+      
       await waitlistUser({
-        fullName: data.fullName,
-        email: data.email,
-        phoneNumber: data.phoneNumber,
-        ocassions: data.occasions.join(', ') // Join array into string for DB
+        fullName: data.fullName.trim(),
+        email: data.email.toLowerCase().trim(),
+        phoneNumber: data.phoneNumber.trim(),
+        occasions: data.occasions.join(', ')
       });
 
-      console.log('Submission successful');
-      setIsSubmitted(true);
-      reset();
+      setFormStatus('success');
+      reset(DEFAULT_FORM_VALUES);
     } catch (error) {
       console.error('Error submitting form:', error);
+      setFormStatus('error');
+      setErrorMessage(
+        error instanceof Error 
+          ? error.message 
+          : 'Failed to submit form. Please try again.'
+      );
     }
   };
   return (
     <div className="min-h-screen bg-black text-white">
-      <div className="flex justify-center md:justify-start ">
+      <div className="flex justify-center md:justify-start pt-2 md:pt-6">
         <Image
           src="/iventverse-logo.png"
           alt="IventVerse Logo"
-          width={150}
-          height={150}
-          className="w-auto h-96 md:h-52 md:-m-5 md:px-5 "
+          width={120}
+          height={120}
+          className="w-auto h-64 md:h-44"
+          priority
         />
       </div>
-      <main className="mx-auto max-w-6xl px-4 py-14">
+      <main className="mx-auto max-w-6xl px-4 pt-2 pb-6 md:py-10">
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <div className="mt-10">
+            <div className="mt-4 md:mt-6">
               <AnimatedTestimonialsDemo />
             </div>
           </motion.div>
@@ -226,12 +239,15 @@ export default function Component() {
                     name="occasions"
                     control={control}
                     render={({ field }) => (
-                      <div>
-
+                      <div className="relative">
                         <button
                           type="button"
+                          id="occasions-dropdown"
+                          aria-haspopup="listbox"
+                          aria-expanded={isOpen}
+                          aria-label="Select event types"
                           onClick={() => setIsOpen(!isOpen)}
-                          className="w-full h-12 rounded-lg border-gray-800 bg-[#111] pl-10 text-left text-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                          className="w-full h-12 rounded-lg border border-gray-800 bg-[#111] pl-10 pr-10 text-left text-gray-300 focus:outline-none focus:ring-2 focus:ring-ivent/50 focus:border-ivent transition-colors"
                         >
                           {field.value.length === 0 ? (
                             <span className="text-gray-400">What type of events are you interested in? (max 3)...</span>
@@ -256,31 +272,45 @@ export default function Component() {
                           <line x1="12" x2="12" y1="3" y2="15" />
                         </svg>
                         {isOpen && (
-                          <div className="absolute z-10 w-full mt-1 bg-[#111] border border-gray-700 rounded-md shadow-lg">
-                            <ul className="py-1 max-h-60 overflow-auto">
-                              {occasions.map((occasion) => ( // Changed variable name from occasions to occasion
-                                <li
-                                  key={occasion}
-                                  className={`px-4 py-2 cursor-pointer ${field.value.includes(occasion)
-                                      ? "bg-gray-700 text-white"
-                                      : "text-gray-200 hover:bg-gray-700"
-                                    }`}
-                                  onClick={() => {
-                                    const updatedValue = field.value.includes(occasion)
-                                      ? field.value.filter((item) => item !== occasion)
-                                      : field.value.length < 3
-                                        ? [...field.value, occasion]
-                                        : field.value;
-
-                                    console.log('Selected occasions:', updatedValue); // Log updated occasions
-                                    field.onChange(updatedValue);
-                                  }}
-                                >
-                                  {occasion}
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
+                          <div 
+                          role="listbox"
+                          aria-multiselectable="true"
+                          aria-labelledby="occasions-dropdown"
+                          className="absolute z-10 w-full mt-1 bg-[#111] border border-gray-700 rounded-md shadow-lg shadow-black/50"
+                        >
+                          <ul className="py-1 max-h-60 overflow-auto">
+                            {OCCASIONS.map((occasion) => (
+                              <li
+                                key={occasion}
+                                role="option"
+                                aria-selected={field.value.includes(occasion)}
+                                className={`px-4 py-2 cursor-pointer transition-colors ${
+                                  field.value.includes(occasion)
+                                    ? "bg-ivent/10 text-ivent"
+                                    : "text-gray-200 hover:bg-gray-800"
+                                }`}
+                                onClick={() => {
+                                  const updatedValue = field.value.includes(occasion)
+                                    ? field.value.filter((item) => item !== occasion)
+                                    : field.value.length < MAX_OCCASIONS
+                                    ? [...field.value, occasion]
+                                    : field.value;
+                                  field.onChange(updatedValue);
+                                }}
+                              >
+                                {occasion}
+                                {field.value.includes(occasion) && (
+                                  <span className="float-right" aria-hidden="true">✓</span>
+                                )}
+                              </li>
+                            ))}
+                          </ul>
+                          {field.value.length > 0 && (
+                            <div className="p-2 text-xs text-gray-400 border-t border-gray-800">
+                              {field.value.length} of {MAX_OCCASIONS} selected
+                            </div>
+                          )}
+                        </div>
                         )}
                       </div>
                     )}
@@ -295,14 +325,28 @@ export default function Component() {
                 <motion.div
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
+                  className="w-full"
                 >
                   <Button
                     type="submit"
-                    className="h-12 w-full rounded-lg bg-[#111] hover:bg-[#222] hover:text-red-300 text-ivent"
+                    disabled={!isDirty || !isValid || formStatus === 'submitting'}
+                    className={`h-12 w-full rounded-lg bg-[#111] hover:bg-[#222] hover:text-red-300 text-ivent transition-all ${
+                      (!isDirty || !isValid) ? 'opacity-50 cursor-not-allowed' : ''
+                    }`}
                     variant="outline"
+                    aria-label="Join the waitlist"
                   >
-                    <span className="flex-1">Join the waitlist</span>
-                    <ArrowRight className="h-4 w-4" />
+                    {formStatus === 'submitting' ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Submitting...
+                      </>
+                    ) : (
+                      <>
+                        <span className="flex-1">Join the waitlist</span>
+                        <ArrowRight className="h-4 w-4" />
+                      </>
+                    )}
                   </Button>
                 </motion.div>
               </motion.form>
@@ -314,9 +358,11 @@ export default function Component() {
                 className="mt-8 flex justify-center md:justify-start gap-8"
               >
                 <Link
-                  className="flex items-center gap-2 text-sm text-gray-400 hover:text-red-300"
-                  href="https://x.com/iventverse"
+                  className="flex items-center gap-2 text-sm text-gray-400 hover:text-red-300 transition-colors"
+                  href={SOCIAL_LINKS.twitter}
                   target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Follow us on Twitter"
                 >
                   <svg
                     className="h-5 w-5"
@@ -329,9 +375,11 @@ export default function Component() {
                 </Link>
 
                 <Link
-                  className="flex items-center gap-2 text-sm text-gray-400 hover:text-red-300"
-                  href="https://www.instagram.com/iventverse?igsh=eTluMmszOTgybDJo"
+                  className="flex items-center gap-2 text-sm text-gray-400 hover:text-red-300 transition-colors"
+                  href={SOCIAL_LINKS.instagram}
                   target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Follow us on Instagram"
                 >
                   <svg
                     className="h-5 w-5"
@@ -368,18 +416,45 @@ export default function Component() {
         </div>
       </main>
 
-      <footer className=" text-center md:mb-5">
-        <p className="text-sm bg-gradient-to-r from-ivent to-red-300 bg-clip-text text-transparent">A product of <span className="hover:underline hover:text-red-200"><a href="https://mecurixtech.com/">Mecurixtech</a></span></p>
+      <footer className="text-center md:mb-5 pb-4">
+        <p className="text-sm bg-gradient-to-r from-ivent to-red-300 bg-clip-text text-transparent">
+          A product of{' '}
+          <a 
+            href={SOCIAL_LINKS.mecurixtech}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:underline hover:text-red-200 transition-colors"
+          >
+            Mecurixtech
+          </a>
+        </p>
       </footer>
 
       <AnimatePresence>
-        {isSubmitted && (
-          <Dialog open={isSubmitted} onOpenChange={setIsSubmitted}>
+        {(formStatus === 'success' || formStatus === 'error') && (
+          <Dialog 
+            open={formStatus === 'success' || formStatus === 'error'} 
+            onOpenChange={(open) => !open && setFormStatus('idle')}
+          >
             <DialogContent className="sm:max-w-[425px] bg-[#111] text-white">
               <DialogHeader>
-                <DialogTitle>Waitlist Submitted</DialogTitle>
+                <DialogTitle>
+                  {formStatus === 'success' ? 'Success!' : 'Something went wrong'}
+                </DialogTitle>
+                <DialogDescription className="text-gray-300">
+                  {formStatus === 'success' 
+                    ? "Thank you for joining our waitlist! We'll be in touch soon."
+                    : errorMessage}
+                </DialogDescription>
               </DialogHeader>
-              <p>Thank you for joining our waitlist! We'll be in touch soon.</p>
+              <div className="flex justify-end">
+                <Button 
+                  onClick={() => setFormStatus('idle')}
+                  className="bg-ivent hover:bg-ivent/90"
+                >
+                  Close
+                </Button>
+              </div>
             </DialogContent>
           </Dialog>
         )}
