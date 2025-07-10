@@ -96,9 +96,9 @@ export default function WaitlistForm() {
   };
   return (
     <div className="min-h-screen bg-black text-white">
-      <div className="flex justify-center md:justify-start pt-2 md:pt-6">
+      <div className="flex justify-center md:justify-start pt-0 md:pt-6">
         <Image
-          src="/iventverse-logo.png"
+          src="/ivent-verse-logo.png"
           alt="IventVerse Logo"
           width={120}
           height={120}
@@ -137,7 +137,7 @@ export default function WaitlistForm() {
                 transition={{ delay: 0.3, duration: 0.5 }}
                 className="mb-12 text-4xl font-medium"
               >
-                Bringing Events closer to you
+                Your One Way Ticket For Fun
                 <br />{" "}
                 <span className="bg-gradient-to-r from-red-500 to-red-300 bg-clip-text text-transparent">
                   Join The Waitlist!

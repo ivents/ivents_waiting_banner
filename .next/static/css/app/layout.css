@@ -1047,6 +1047,24 @@ video {
 .pb-6 {
   padding-bottom: 1.5rem;
 }
+.pt-1 {
+  padding-top: 0.25rem;
+}
+.pt-\[\] {
+  padding-top: ;
+}
+.pt-\[-10\] {
+  padding-top: -10;
+}
+.pt-\[-96\] {
+  padding-top: -96;
+}
+.pt-96 {
+  padding-top: 24rem;
+}
+.pt-0 {
+  padding-top: 0px;
+}
 .text-left {
   text-align: left;
 }
@@ -1624,6 +1642,16 @@ body {
   .md\:py-4 {
     padding-top: 1rem;
     padding-bottom: 1rem;
+  }
+
+  .md\:py-1 {
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+  }
+
+  .md\:py-96 {
+    padding-top: 24rem;
+    padding-bottom: 24rem;
   }
 
   .md\:pt-0 {
