@@ -96,15 +96,17 @@ export default function WaitlistForm() {
   };
   return (
     <div className="min-h-screen bg-black text-white">
-      <div className="flex justify-center md:justify-start pt-0 md:pt-6">
-        <Image
-          src="/iv1.png"
-          alt="IventVerse Logo"
-          width={120}
-          height={120}
-          className="w-auto h-64 md:h-44"
-          priority
-        />
+      <div className="pt-0 md:pt-6 mb-6 md:mb-0">
+        <div className="flex justify-center md:justify-start w-full px-4 md:px-6">
+          <Image
+            src="/iv1.png"
+            alt="IventVerse Logo"
+            width={240}
+            height={240}
+            className="h-32 w-auto object-contain md:h-44"
+            priority
+          />
+        </div>
       </div>
       <main className="mx-auto max-w-6xl px-4 pt-2 pb-6 md:py-10">
         <div className="grid md:grid-cols-2 gap-12 items-center">
