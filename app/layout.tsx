@@ -17,9 +17,9 @@ export const metadata: Metadata = {
   title: "Iventverse",
   description: "",
   icons: {
-    icon: "/ivent-verse-logo.png",
-    shortcut: "/ivent-verse-logo.png",
-    apple: "/ivent-verse-logo.png",
+    icon: "/iv1.png",
+    shortcut: "/iv1.png",
+    apple: "/iv1.png",
   },
 };
 

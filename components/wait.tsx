@@ -98,7 +98,7 @@ export default function WaitlistForm() {
     <div className="min-h-screen bg-black text-white">
       <div className="flex justify-center md:justify-start pt-0 md:pt-6">
         <Image
-          src="/ivent-verse-logo.png"
+          src="/iv1.png"
           alt="IventVerse Logo"
           width={120}
           height={120}
@@ -129,7 +129,7 @@ export default function WaitlistForm() {
                 transition={{ delay: 0.2 }}
                 className="mb-2 text-base text-gray-400"
               >
-                IventVerse
+                Iventverse
               </motion.div>
               <motion.h1
                 initial={{ opacity: 0, y: 20 }}
