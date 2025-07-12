@@ -96,7 +96,7 @@ export default function WaitlistForm() {
   };
   return (
     <div className="min-h-screen bg-black text-white">
-      <div className="pt-0 md:pt-6 mb-6 md:mb-0">
+      <div className="pt-4 md:pt-6 mb-6 md:mb-0">
         <div className="flex justify-center md:justify-start w-full px-4 md:px-6">
           <Image
             src="/iv1.png"
@@ -109,22 +109,24 @@ export default function WaitlistForm() {
         </div>
       </div>
       <main className="mx-auto max-w-6xl px-4 pt-2 pb-6 md:py-10">
-        <div className="grid md:grid-cols-2 gap-12 items-center">
+        <div className="flex flex-col-reverse md:grid md:grid-cols-2 gap-8 md:gap-12 items-center">
           <motion.div
+            className="w-full mt-16 md:mt-0"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <div className="mt-4 md:mt-6">
+            <div className="w-full">
               <AnimatedTestimonialsDemo />
             </div>
           </motion.div>
           <motion.div
+            className="w-full"
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <div className="text-center md:text-left md:-mt-36">
+            <div className="text-center md:text-left md:-mt-36 w-full">
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
