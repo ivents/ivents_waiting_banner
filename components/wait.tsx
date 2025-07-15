@@ -109,7 +109,7 @@ export default function WaitlistForm() {
         </div>
       </div>
       <main className="mx-auto max-w-6xl px-4 pt-2 pb-6 md:py-10">
-        <div className="flex flex-col-reverse md:grid md:grid-cols-2 gap-8 md:gap-12 items-center">
+        <div className="flex flex-col md:grid md:grid-cols-2 gap-8 md:gap-12 items-center">
           <motion.div
             className="w-full mt-16 md:mt-0"
             initial={{ opacity: 0, x: -20 }}
@@ -118,6 +118,31 @@ export default function WaitlistForm() {
           >
             <div className="w-full">
               <AnimatedTestimonialsDemo />
+              <motion.div
+                className="mt-8 flex justify-center"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1 }}
+              >
+                <motion.div
+                  className="cursor-pointer"
+                  whileHover={{ scale: 1.2 }}
+                  whileTap={{ scale: 0.9 }}
+                  animate={{
+                    y: [0, -15, 0],
+                    transition: {
+                      duration: 1,
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }
+                  }}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="26" height="26" className="text-gray-400">
+                    <path fill="none" d="M0 0h24v24H0z"/>
+                    <path d="M12 10l-5 5 1.414 1.414L12 12.828l5.586 5.586L20 15l-8-8z" fill="currentColor"/>
+                  </svg>
+                </motion.div>
+              </motion.div>
             </div>
           </motion.div>
           <motion.div
