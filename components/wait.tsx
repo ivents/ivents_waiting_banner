@@ -137,7 +137,7 @@ export default function WaitlistForm() {
                     }
                   }}
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="26" height="26" className="text-gray-400">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="26" height="26" className="text-gray-400 md:hidden">
                     <path fill="none" d="M0 0h24v24H0z"/>
                     <path d="M12 10l-5 5 1.414 1.414L12 12.828l5.586 5.586L20 15l-8-8z" fill="currentColor"/>
                   </svg>
