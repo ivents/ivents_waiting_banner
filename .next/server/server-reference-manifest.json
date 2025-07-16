@@ -1,5 +1,1 @@
-{
-  "node": {},
-  "edge": {},
-  "encryptionKey": "LCFuF7GXUyPQ73hlSivQ0JJW4RF15n3WaGm7SL3bNcY="
-}
+{"node":{"7f2a651d49e6cfdf7703be8190a3f9638d29842745":{"workers":{"app/page":{"moduleId":"8161","async":false}},"layer":{"app/page":"action-browser"}}},"edge":{},"encryptionKey":"LCFuF7GXUyPQ73hlSivQ0JJW4RF15n3WaGm7SL3bNcY="}

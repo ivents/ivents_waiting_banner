@@ -7,7 +7,7 @@ type User = {
     fullName: string;
     email: string;
     phoneNumber: string;
-    occasions: string
+    occasions: string;
 };
 
 export const waitlistUser = async (user: User) => {
@@ -182,34 +182,32 @@ export const waitlistUser = async (user: User) => {
                 html: '[HTML_CONTENT]' // Don't log the full HTML
             }, null, 2));
             
-            let result;
-            try {
-                console.log('Attempting to send email...');
-                result = await resend.emails.send(emailData);
-                console.log('Resend API response:', JSON.stringify(result, null, 2));
+            console.log('Attempting to send email...');
+            const result = await resend.emails.send(emailData);
+            console.log('Resend API response:', JSON.stringify(result, null, 2));
 
-                if (!result) {
-                    throw new Error('No response from email service');
-                }
+            if (!result) {
+                throw new Error('No response from email service');
+            }
 
-                if ('error' in result && result.error) {
-                    console.error('Failed to send welcome email:', result.error);
-                    return { 
-                        success: false, 
-                        error: result.error,
-                        message: 'Failed to send welcome email',
-                        emailSent: false
-                    };
-                }
-                
-                // If we get here, email was sent successfully
-                console.log('Welcome email sent successfully');
+            if ('error' in result && result.error) {
+                console.error('Failed to send welcome email:', result.error);
                 return { 
-                    success: true, 
-                    data: result.data,
-                    emailSent: true,
-                    message: 'Welcome email sent successfully'
+                    success: false, 
+                    error: result.error,
+                    message: 'Failed to send welcome email',
+                    emailSent: false
                 };
+            }
+            
+            // If we get here, email was sent successfully
+            console.log('Welcome email sent successfully');
+            return { 
+                success: true, 
+                data: result.data,
+                emailSent: true,
+                message: 'Welcome email sent successfully'
+            };
         } catch (emailError) {
             console.error('Error sending welcome email:', emailError);
             // Return success for the user creation but indicate email failed
@@ -220,14 +218,6 @@ export const waitlistUser = async (user: User) => {
                 error: emailError instanceof Error ? emailError.message : 'Unknown email error'
             };
         }
-
-        return {
-            success: true,
-            data: userResponse,
-            emailSent: false, // This would be true if we got to the email sending part
-            message: 'User created successfully'
-        };
-
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
         console.error('Error in waitlistUser:', error);

@@ -5,9 +5,8 @@ const nextConfig = {
   images: {
     domains: ['res.cloudinary.com'], // Add any other domains you need
   },
-  // Enable static exports for Netlify
-  output: 'export',
-  // Optional: Add a trailing slash for better compatibility
+  // Server Actions are enabled by default in Next.js 14+
+  // Remove static export to support server-side features
   trailingSlash: true,
   // Optional: Configure webpack
   webpack: (config, { isServer }) => {
