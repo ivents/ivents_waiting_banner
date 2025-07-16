@@ -201,7 +201,8 @@ export const waitlistUser = async (user: User) => {
                         emailSent: false
                     };
                 }
-            } else {
+                
+                // If we get here, email was sent successfully
                 console.log('Welcome email sent successfully');
                 return { 
                     success: true, 
@@ -209,7 +210,6 @@ export const waitlistUser = async (user: User) => {
                     emailSent: true,
                     message: 'Welcome email sent successfully'
                 };
-            }
         } catch (emailError) {
             console.error('Error sending welcome email:', emailError);
             // Return success for the user creation but indicate email failed
