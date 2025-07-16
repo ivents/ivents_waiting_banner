@@ -1,21 +1,50 @@
 [build]
   command = "npm run build"
   publish = ".next"
+  functions = ".netlify/functions"
 
 [build.environment]
   NODE_VERSION = "18.17.0"
   NEXT_TELEMETRY_DISABLED = "1"
+  NPM_FLAGS = "--legacy-peer-deps"
+
+[build.processing]
+  skip_processing = true
+
+[functions]
+  node_bundler = "esbuild"
+  external_node_modules = ["@prisma/client", "@prisma/engines"]
+  included_files = ["node_modules/.prisma/**"]
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
-[functions]
-  node_bundler = "esbuild"
+[[plugins]]
+  package = "@netlify/plugin-lighthouse"
+  [plugins.inputs.thresholds]
+    performance = 0.5
+    accessibility = 0.9
+    best-practices = 0.9
+    seo = 0.9
 
+[dev]
+  framework = "next"
+  targetPort = 3000
+  publish = ".next"
+  functions = ".netlify/functions"
+  command = "npm run dev"
+
+# Handle client-side routing
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
 
-[dev]
-  framework = "next"
+# Handle Next.js static files
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
