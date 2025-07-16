@@ -3,6 +3,9 @@
 import { client } from "./db";
 import { Resend } from 'resend';
 
+// Initialize Resend with API key from environment variables
+const resend = new Resend(process.env.RESEND_API_KEY);
+
 type User = {
     fullName: string;
     email: string;
@@ -60,15 +63,7 @@ export const waitlistUser = async (user: User) => {
 
         // Then, send welcome email using the Resend API directly
         try {
-            const apiKey = process.env.RESEND_API_KEY;
-            console.log('RESEND_API_KEY exists:', !!apiKey);
-            
-            if (!apiKey) {
-                throw new Error('RESEND_API_KEY is not set in environment variables');
-            }
-
-            console.log('Initializing Resend client...');
-            const resend = new Resend(apiKey);
+            // Resend client is already initialized at the top of the file
             
             // Validate email format
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
