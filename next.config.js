@@ -5,6 +5,11 @@ const nextConfig = {
     domains: ['res.cloudinary.com'],
     unoptimized: true, // Required for static exports or when not using Next.js Image Optimization API
   },
+  env: {
+    EMAILJS_SERVICE_ID: process.env.EMAILJS_SERVICE_ID,
+    EMAILJS_TEMPLATE_ID: process.env.EMAILJS_TEMPLATE_ID,
+    EMAILJS_PUBLIC_KEY: process.env.EMAILJS_PUBLIC_KEY,
+  },
   // Server Actions are enabled by default in Next.js 14+
   // Remove static export to support server-side features
   trailingSlash: true,

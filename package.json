@@ -13,17 +13,23 @@
     "postinstall": "prisma generate"
   },
   "dependencies": {
+    "@emailjs/browser": "^4.4.1",
+    "@emailjs/nodejs": "^5.0.2",
     "@hookform/resolvers": "^3.9.1",
     "@prisma/client": "^5.22.0",
     "@radix-ui/react-dialog": "^1.1.2",
     "@radix-ui/react-slot": "^1.1.0",
     "@tabler/icons-react": "^3.22.0",
+    "@types/nodemailer": "^6.4.17",
+    "axios": "^1.10.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "dotenv": "^16.4.7",
+    "emailjs-com": "^3.2.0",
     "framer-motion": "^11.11.17",
     "lucide-react": "^0.460.0",
     "next": "^15.0.3",
+    "nodemailer": "^7.0.5",
     "pg": "^8.13.1",
     "prisma": "^5.22.0",
     "react": "^18.3.1",
@@ -36,6 +42,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@types/axios": "^0.9.36",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

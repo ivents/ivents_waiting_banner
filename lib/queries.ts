@@ -1,10 +1,22 @@
 "use server";
 
 import { client } from "./db";
-import { Resend } from 'resend';
+import * as EmailJS from '@emailjs/nodejs';
 
-// Initialize Resend with API key from environment variables
-const resend = new Resend(process.env.RESEND_API_KEY);
+interface EmailJSError extends Error {
+    status?: number;
+    text?: string;
+}
+
+// Initialize EmailJS with your public key
+const EMAILJS_SERVICE_ID = process.env.EMAILJS_SERVICE_ID || '';
+const EMAILJS_TEMPLATE_ID = process.env.EMAILJS_TEMPLATE_ID || '';
+const EMAILJS_PUBLIC_KEY = process.env.EMAILJS_PUBLIC_KEY || '';
+
+if (!EMAILJS_SERVICE_ID || !EMAILJS_TEMPLATE_ID || !EMAILJS_PUBLIC_KEY) {
+    console.error('Missing required EmailJS environment variables');
+    throw new Error('Email service is not properly configured');
+}
 
 type User = {
     fullName: string;
@@ -42,16 +54,46 @@ export const waitlistUser = async (user: User) => {
     }
 
     try {
-        console.log('Creating user in database...');
-        // First, create the user in the database
-        const userResponse = await client.user.create({
-            data: {
-                fullName: user.fullName,
-                email: user.email,
-                phoneNumber: user.phoneNumber,
-                occasions: user.occasions
-            },
-        });
+        console.log('Checking if user already exists...');
+        let userResponse;
+        
+        try {
+            // Try to create a new user first (more efficient if most users are new)
+            console.log('Attempting to create new user...');
+            userResponse = await client.user.create({
+                data: {
+                    fullName: user.fullName,
+                    email: user.email,
+                    phoneNumber: user.phoneNumber,
+                    occasions: user.occasions
+                },
+            });
+            console.log('New user created successfully');
+        } catch (error: unknown) {
+            // Handle Prisma errors
+            const prismaError = error as { code?: string; meta?: { target?: string[] } };
+            // If user already exists, update their information
+            if (prismaError.code === 'P2002' && prismaError.meta?.target?.includes('email')) {
+                console.log('User already exists, updating information...');
+                userResponse = await client.user.update({
+                    where: { email: user.email },
+                    data: {
+                        fullName: user.fullName,
+                        phoneNumber: user.phoneNumber,
+                        occasions: user.occasions,
+                        updatedAt: new Date()
+                    },
+                });
+                console.log('User information updated successfully');
+            } else {
+                // Re-throw the error if it's not a duplicate email error
+                console.error('Error object:', error);
+                console.error('Error stack:', (error as Error)?.stack);
+                console.error('Error name:', (error as Error)?.name);
+                console.error('Prisma error code:', prismaError?.code);
+                throw error;
+            }
+        }
 
         if (!userResponse) {
             const error = "No response received from database";
@@ -73,133 +115,86 @@ export const waitlistUser = async (user: User) => {
             }
             
             console.log('Sending email to:', user.email);
-            const emailData = {
-                from: 'Iventverse <onboarding@resend.dev>',
-                to: user.email,
+            
+            // Prepare template parameters for EmailJS
+            const templateParams = {
+                to_email: user.email,
+                to_name: user.fullName,
+                from_name: 'Iventverse Team',
                 subject: '🎉 Welcome to Iventverse!',
-                html: `
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <title>🎉 Welcome to Iventverse Waitlist!</title>
-                    <style>
-                        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-                        body { margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #1f2937; background-color: #f9fafb; }
-                        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-                        .header { padding: 40px 0; text-align: center; }
-                        .content { background: #ffffff; padding: 40px; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.02); }
-                        h1 { color: #111827; font-size: 28px; font-weight: 700; margin: 0 0 16px; text-align: center; }
-                        h2 { color: #111827; font-size: 20px; font-weight: 600; margin: 0 0 16px; }
-                        p { color: #4b5563; margin: 0 0 24px; line-height: 1.6; }
-                        .position { 
-                            display: inline-block; 
-                            background: #f3f4f6; 
-                            color: #4b5563; 
-                            padding: 4px 12px; 
-                            border-radius: 20px; 
-                            font-size: 14px; 
-                            font-weight: 500; 
-                            margin-bottom: 24px;
-                        }
-                        .highlight {
-                            background: #fef2f2;
-                            border-left: 4px solid #ef4444;
-                            padding: 16px;
-                            margin: 24px 0;
-                            border-radius: 0 8px 8px 0;
-                        }
-                        .highlight p { margin: 0; color: #111827; }
-                        .footer { text-align: center; padding: 24px 0; color: #9ca3af; font-size: 14px; }
-                        .social-links { margin: 24px 0; }
-                        .social-link { display: inline-block; margin: 0 8px; color: #6b7280; text-decoration: none; }
-                        .social-link:hover { color: #ef4444; }
-                        @media only screen and (max-width: 600px) {
-                            .container { padding: 16px; }
-                            .content { padding: 24px; }
-                            h1 { font-size: 24px; }
-                        }
-                    </style>
-                </head>
-                <body>
-                    <div class="container">
-                        <div class="header">
-                            <div style="margin-bottom: 20px;">
-                                <img src="https://yourdomain.com/iv1.png" alt="Iventverse Logo" style="max-width: 180px; height: auto;" />
-                            </div>
-                            <h1>🎉 You're on the List!</h1>
+                message: `
+                <div style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #1f2937; max-width: 600px; margin: 0 auto; padding: 20px;">
+                    <div style="text-align: center; padding: 40px 0;">
+                        <div style="margin-bottom: 20px;">
+                            <img src="https://yourdomain.com/iv1.png" alt="Iventverse Logo" style="max-width: 180px; height: auto;" />
+                        </div>
+                        <h1 style="color: #111827; font-size: 28px; font-weight: 700; margin: 0 0 16px; text-align: center;">🎉 You're on the List!</h1>
+                    </div>
+                    
+                    <div style="background: #ffffff; padding: 40px; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.02);">
+                        <h2 style="color: #111827; font-size: 20px; font-weight: 600; margin: 0 0 16px;">Hello ${user.fullName.split(' ')[0] || 'there'},</h2>
+                        
+                        <p style="color: #4b5563; margin: 0 0 24px; line-height: 1.6;">Thank you for joining the Iventverse waitlist! We're excited to have you on board as we prepare to launch something truly special.</p>
+                        
+                        <div style="background: #fef2f2; border-left: 4px solid #ef4444; padding: 16px; margin: 24px 0; border-radius: 0 8px 8px 0;">
+                            <p style="margin: 0; color: #111827;"><strong>What's next?</strong> We'll keep you updated on our progress and notify you as soon as we're ready to welcome you in.</p>
                         </div>
                         
-                        <div class="content">
-                            <h2>Hello ${user.fullName.split(' ')[0] || 'there'},</h2>
-                            
-                            <p>Thank you for joining the Iventverse waitlist! We're excited to have you on board as we prepare to launch something truly special.</p>
-                            
-                            <div class="highlight">
-                                <p><strong>What's next?</strong> We'll keep you updated on our progress and notify you as soon as we're ready to welcome you in.</p>
-                            </div>
-                            
-                            <p>In the meantime, here's what you can expect:</p>
-                            <ul style="color: #4b5563; padding-left: 20px; margin: 0 0 24px;">
-                                <li style="margin-bottom: 8px;">Early access to new features</li>
-                                <li style="margin-bottom: 8px;">Exclusive updates before anyone else</li>
-                                <li>Special surprises along the way</li>
-                            </ul>
-                            
-                            <p>We're working hard to make Iventverse amazing, and we can't wait to share it with you soon!</p>
-                            
-                            <p>Best regards,<br>The Iventverse Team</p>
-                            
-                            <div class="social-links">
-                                <a href="https://twitter.com/iventverse" class="social-link" target="_blank">Twitter</a> • 
-                                <a href="https://instagram.com/iventverse" class="social-link" target="_blank">Instagram</a> • 
-                                <a href="https://facebook.com/iventverse" class="social-link" target="_blank">Facebook</a>
-                            </div>
-                        </div>
+                        <p style="color: #4b5563; margin: 0 0 24px; line-height: 1.6;">In the meantime, here's what you can expect:</p>
+                        <ul style="color: #4b5563; padding-left: 20px; margin: 0 0 24px;">
+                            <li style="margin-bottom: 8px;">Early access to new features</li>
+                            <li style="margin-bottom: 8px;">Exclusive updates before anyone else</li>
+                            <li>Special surprises along the way</li>
+                        </ul>
                         
-                        <div class="footer">
-                            <p>© ${new Date().getFullYear()} Iventverse. All rights reserved.</p>
-                            <p style="font-size: 13px; color: #9ca3af; margin-top: 8px;">
-                                You're receiving this email because you joined the Iventverse waitlist.<br>
-                                <a href="#" style="color: #9ca3af; text-decoration: underline;">Unsubscribe</a> | 
-                                <a href="#" style="color: #9ca3af; text-decoration: underline;">Privacy Policy</a>
-                            </p>
+                        <p style="color: #4b5563; margin: 0 0 24px; line-height: 1.6;">We're working hard to make Iventverse amazing, and we can't wait to share it with you soon!</p>
+                        
+                        <p style="color: #4b5563; margin: 0 0 24px; line-height: 1.6;">Best regards,<br>The Iventverse Team</p>
+                        
+                        <div style="margin: 24px 0;">
+                            <a href="https://twitter.com/iventverse" style="display: inline-block; margin: 0 8px; color: #6b7280; text-decoration: none;" target="_blank">Twitter</a> • 
+                            <a href="https://instagram.com/iventverse" style="display: inline-block; margin: 0 8px; color: #6b7280; text-decoration: none;" target="_blank">Instagram</a> • 
+                            <a href="https://facebook.com/iventverse" style="display: inline-block; margin: 0 8px; color: #6b7280; text-decoration: none;" target="_blank">Facebook</a>
                         </div>
                     </div>
-                </body>
-                </html>
-                `,
+                    
+                    <div style="text-align: center; padding: 24px 0; color: #9ca3af; font-size: 14px;">
+                        <p>© ${new Date().getFullYear()} Iventverse. All rights reserved.</p>
+                        <p style="font-size: 13px; color: #9ca3af; margin-top: 8px;">
+                            You're receiving this email because you joined the Iventverse waitlist.<br>
+                            <a href="#" style="color: #9ca3af; text-decoration: underline;">Unsubscribe</a> | 
+                            <a href="#" style="color: #9ca3af; text-decoration: underline;">Privacy Policy</a>
+                        </p>
+                    </div>
+                </div>
+                `
             };
             
-            console.log('Email payload:', JSON.stringify({
-                ...emailData,
-                html: '[HTML_CONTENT]' // Don't log the full HTML
-            }, null, 2));
+            console.log('Sending email with EmailJS...');
             
-            console.log('Attempting to send email...');
-            const result = await resend.emails.send(emailData);
-            console.log('Resend API response:', JSON.stringify(result, null, 2));
+            // Send email directly using EmailJS
+            const result = await EmailJS.send(
+                EMAILJS_SERVICE_ID,
+                EMAILJS_TEMPLATE_ID,
+                templateParams,
+                {
+                    publicKey: EMAILJS_PUBLIC_KEY,
+                    // Optionally, configure the EmailJS API host
+                    // host: 'api.emailjs.com',
+                }   
+            );
 
-            if (!result) {
-                throw new Error('No response from email service');
-            }
+            console.log('EmailJS API response:', result);
 
-            if ('error' in result && result.error) {
-                console.error('Failed to send welcome email:', result.error);
-                return { 
-                    success: false, 
-                    error: result.error,
-                    message: 'Failed to send welcome email',
-                    emailSent: false
-                };
+            if (result.status !== 200) {
+                throw new Error('Failed to send email');
             }
             
             // If we get here, email was sent successfully
             console.log('Welcome email sent successfully');
             return { 
                 success: true, 
-                data: result.data,
+                data: result,
                 emailSent: true,
                 message: 'Welcome email sent successfully'
             };
@@ -213,13 +208,13 @@ export const waitlistUser = async (user: User) => {
                 error: emailError instanceof Error ? emailError.message : 'Unknown email error'
             };
         }
+
     } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-        console.error('Error in waitlistUser:', error);
+        console.error('Error in waitlistUser function:', error);
         return {
             success: false,
-            error: errorMessage,
-            message: 'Failed to process your request',
+            error: error instanceof Error ? error.message : 'Unknown error occurred',
+            message: 'Failed to process user registration',
             emailSent: false
         };
     }

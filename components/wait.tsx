@@ -77,32 +77,42 @@ export default function WaitlistForm() {
     setErrorMessage('');
     
     try {
-      console.log('Calling waitlistUser...');
-      const result = await waitlistUser({
-        fullName: data.fullName.trim(),
-        email: data.email.toLowerCase().trim(),
-        phoneNumber: data.phoneNumber.trim(),
-        occasions: data.occasions.join(', ')
+      console.log('Submitting form to /api/register...');
+      const response = await fetch('/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          fullName: data.fullName.trim(),
+          email: data.email.toLowerCase().trim(),
+          phoneNumber: data.phoneNumber.trim(),
+          occasions: data.occasions.join(', ')
+        }),
       });
 
-      console.log('waitlistUser result:', result);
+      const result = await response.json().catch(() => ({
+        success: false,
+        error: 'Invalid server response',
+      }));
+
+      console.log('API response:', { status: response.status, result });
       
-      if (!result) {
-        throw new Error('No response from server');
+      if (!response.ok) {
+        throw new Error(
+          result.error || 
+          result.message || 
+          `Request failed with status ${response.status}`
+        );
       }
       
       if (result.success) {
         console.log('Form submitted successfully');
-        if (result.emailSent) {
-          console.log('Welcome email was sent');
-        } else {
-          console.warn('User was created but welcome email was not sent');
-        }
+        console.log(result.message || 'Registration successful');
         setFormStatus('success');
         reset(DEFAULT_FORM_VALUES);
       } else {
-        console.error('Form submission failed:', result.error);
-        throw new Error(result.message || 'Failed to submit form. Please try again later.');
+        throw new Error(result.error || 'Failed to submit form. Please try again later.');
       }
     } catch (error) {
       console.error('Error in form submission:', error);
@@ -110,14 +120,35 @@ export default function WaitlistForm() {
       
       let errorMessage = 'An unexpected error occurred. Please try again.';
       
-      if (error instanceof Error) {
-        errorMessage = error.message;
+      // Handle different types of errors
+      if (error && typeof error === 'object' && 'success' in error) {
+        // Handle API response with success status
+        const apiError = error as { success: boolean; message?: string; emailSent?: boolean };
+        if (apiError.success && apiError.emailSent === false) {
+          // User was created but email failed to send
+          errorMessage = 'Registration successful, but we had trouble sending your welcome email.';
+          setFormStatus('success'); // Still show success state
+        } else {
+          errorMessage = apiError.message || 'An error occurred during registration.';
+        }
+      } else if (error instanceof Error) {
+        // Check for specific error messages from the server
+        if (error.message.includes('Unique constraint failed') || 
+            error.message.includes('email')) {
+          errorMessage = 'This email is already registered.';
+        } else if (error.message.includes('network')) {
+          errorMessage = 'Network error. Please check your connection and try again.';
+        } else {
+          errorMessage = error.message;
+        }
       } else if (typeof error === 'string') {
         errorMessage = error;
       } else if (error && typeof error === 'object' && 'message' in error) {
         errorMessage = String(error.message);
       }
       
+      // Clean up any technical details from the error message
+      errorMessage = errorMessage.replace(/Error: /g, '').replace(/Prisma.*?error:/g, '');
       setErrorMessage(errorMessage);
     }
   };
