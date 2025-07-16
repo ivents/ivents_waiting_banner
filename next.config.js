@@ -1,9 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
   images: {
-    domains: ['res.cloudinary.com'], // Add any other domains you need
+    domains: ['res.cloudinary.com'],
+    unoptimized: true, // Required for static exports or when not using Next.js Image Optimization API
   },
   // Server Actions are enabled by default in Next.js 14+
   // Remove static export to support server-side features

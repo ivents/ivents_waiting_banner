@@ -132,6 +132,13 @@ export default function WaitlistForm() {
             height={240}
             className="h-32 w-auto object-contain md:h-44"
             priority
+            unoptimized={process.env.NODE_ENV !== 'production'}
+            onError={(e) => {
+              console.error('Failed to load image:', e);
+              const target = e.target as HTMLImageElement;
+              target.onerror = null;
+              target.src = '/iv1.png';
+            }}
           />
         </div>
       </div>
