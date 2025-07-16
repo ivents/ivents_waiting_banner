@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma'; // adjust as needed
 import { Resend } from 'resend';
 import { NextResponse } from 'next/server';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = new Resend('re_13d4N1Ey_7Smd6ei4tdtqNS9aebXvokis');
 
 export async function POST(req: Request) {
   const { fullName, email } = await req.json();
