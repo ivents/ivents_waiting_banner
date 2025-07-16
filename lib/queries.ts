@@ -70,6 +70,13 @@ export const waitlistUser = async (user: User) => {
             console.log('Initializing Resend client...');
             const resend = new Resend(apiKey);
             
+            // Validate email format
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(user.email)) {
+                console.error('Invalid email format:', user.email);
+                throw new Error('Invalid email address format');
+            }
+            
             console.log('Sending email to:', user.email);
             const emailData = {
                 from: 'Iventverse <onboarding@resend.dev>',
@@ -175,17 +182,25 @@ export const waitlistUser = async (user: User) => {
                 html: '[HTML_CONTENT]' // Don't log the full HTML
             }, null, 2));
             
-            const result = await resend.emails.send(emailData);
-            console.log('Resend API response:', JSON.stringify(result, null, 2));
+            let result;
+            try {
+                console.log('Attempting to send email...');
+                result = await resend.emails.send(emailData);
+                console.log('Resend API response:', JSON.stringify(result, null, 2));
 
-            if ('error' in result && result.error) {
-                console.error('Failed to send welcome email:', result.error);
-                return { 
-                    success: false, 
-                    error: result.error,
-                    message: 'Failed to send welcome email',
-                    emailSent: false
-                };
+                if (!result) {
+                    throw new Error('No response from email service');
+                }
+
+                if ('error' in result && result.error) {
+                    console.error('Failed to send welcome email:', result.error);
+                    return { 
+                        success: false, 
+                        error: result.error,
+                        message: 'Failed to send welcome email',
+                        emailSent: false
+                    };
+                }
             } else {
                 console.log('Welcome email sent successfully');
                 return { 
