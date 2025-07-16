@@ -72,26 +72,53 @@ export default function WaitlistForm() {
   });
 
   const onSubmit = async (data: FormData) => {
+    console.log('Form submitted with data:', data);
+    setFormStatus('submitting');
+    setErrorMessage('');
+    
     try {
-      setFormStatus('submitting');
-      
-      await waitlistUser({
+      console.log('Calling waitlistUser...');
+      const result = await waitlistUser({
         fullName: data.fullName.trim(),
         email: data.email.toLowerCase().trim(),
         phoneNumber: data.phoneNumber.trim(),
         occasions: data.occasions.join(', ')
       });
 
-      setFormStatus('success');
-      reset(DEFAULT_FORM_VALUES);
+      console.log('waitlistUser result:', result);
+      
+      if (!result) {
+        throw new Error('No response from server');
+      }
+      
+      if (result.success) {
+        console.log('Form submitted successfully');
+        if (result.emailSent) {
+          console.log('Welcome email was sent');
+        } else {
+          console.warn('User was created but welcome email was not sent');
+        }
+        setFormStatus('success');
+        reset(DEFAULT_FORM_VALUES);
+      } else {
+        console.error('Form submission failed:', result.error);
+        throw new Error(result.message || 'Failed to submit form. Please try again later.');
+      }
     } catch (error) {
-      console.error('Error submitting form:', error);
+      console.error('Error in form submission:', error);
       setFormStatus('error');
-      setErrorMessage(
-        error instanceof Error 
-          ? error.message 
-          : 'Failed to submit form. Please try again.'
-      );
+      
+      let errorMessage = 'An unexpected error occurred. Please try again.';
+      
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      } else if (error && typeof error === 'object' && 'message' in error) {
+        errorMessage = String(error.message);
+      }
+      
+      setErrorMessage(errorMessage);
     }
   };
   return (
